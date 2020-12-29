@@ -1,0 +1,30 @@
+version: "3"
+services:
+  postgres:
+    container_name: postgres
+    image: postgres:latest
+    network_mode: bridge
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_PASSWORD=password
+   #   - POSTGRES_USER=expensetracker
+   #   - POSTGRES_DB=expensetrackerdb
+    volumes:
+      - ./dump/expensetracker_db.sql:/docker-entrypoint-initdb.d/10-expensetracker_db.sql
+    restart: unless-stopped
+  # APP*****************************************
+  springbootapp:
+    container_name: springbootapp
+    image: springbootapp:latest
+    build : ./
+    network_mode: bridge
+    ports:
+      - 8080:8080
+    restart: unless-stopped
+    depends_on:
+      - postgres
+    links:
+      - postgres
+volumes:
+  postgres-data:
